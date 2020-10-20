@@ -13,9 +13,6 @@ const swaggerDocs = swaggerJsDoc(swaggerConfig);
 // API documentation
 api.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 
-// Health
-api.get('/health', (req, res) => sendResponse(res, 200, healthService.health()));
-
 /**
  * @swagger
  * /messages:
@@ -154,7 +151,7 @@ api.put('/messages', (req, res) => {
  *               properties:
  *                 status:
  *                   type: string
- *                   example: "Error: this message has been reinserted in the queue'"
+ *                   example: "Error: this message has been reinserted in the queue"
  *
  */
 api.delete('/messages', (req, res) => {
@@ -164,5 +161,22 @@ api.delete('/messages', (req, res) => {
   else if (result === false) sendResponse(res, 410, { status: 'Error: this message has been reinserted in the queue' });
   else sendResponse(res, 200, { status: 'Success' });
 });
+
+/**
+ * @swagger
+ * /health:
+ *  get:
+ *    summary: Health check
+ *    description: Check the health and uptime of the service
+ *    responses:
+ *      '200':
+ *        description: Healthy service
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              example: { appName: WonderQ, uptime: 40.21312, message: OK, timestamp: 1603219688538 }
+ */
+api.get('/health', (req, res) => sendResponse(res, 200, healthService.health()));
 
 module.exports = api;
