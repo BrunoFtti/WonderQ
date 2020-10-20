@@ -47,13 +47,15 @@ api.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
  *              properties:
  *                status:
  *                  type: string
- *                  example: "Error: the request body is empty"
- *
+ *                  example: "Error"
+ *                details:
+ *                  type: string
+ *                  example: "The request body is empty"
  */
 api.post('/messages', (req, res) => {
   const result = queueService.enqueue(req.body);
 
-  if (!result) sendResponse(res, 400, { status: 'Error: the request body is empty' });
+  if (!result) sendResponse(res, 400, { status: 'Error', details: 'The request body is empty' });
   else sendResponse(res, 200, { messageId: result });
 });
 
@@ -95,13 +97,15 @@ api.post('/messages', (req, res) => {
  *              properties:
  *                status:
  *                  type: string
- *                  example: "Error: missing amount field in the request body"
- *
+ *                  example: "Error"
+ *                details:
+ *                  type: string
+ *                  example: "Missing amount field in the request body"
  */
 api.put('/messages', (req, res) => {
   const result = queueService.dequeue(req.body);
 
-  if (!result) sendResponse(res, 400, { status: 'Error: missing "amount" field in the request body' });
+  if (!result) sendResponse(res, 400, { status: 'Error', details: 'Missing "amount" field in the request body' });
   else sendResponse(res, 200, { messages: result });
 });
 
@@ -122,16 +126,8 @@ api.put('/messages', (req, res) => {
  *                type: string
  *                example: "627014c3-344b-4be9-b7a5-8bcf4a8a4d3c"
  *    responses:
- *      '200':
+ *      '204':
  *        description: Successful
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                status:
- *                  type: string
- *                  example: "Success"
  *      '400':
  *        description: Error - there is no messageId field in the request body
  *        content:
@@ -141,25 +137,30 @@ api.put('/messages', (req, res) => {
  *              properties:
  *                status:
  *                  type: string
- *                  example: "Error: missing messageId field in the request body"
+ *                  example: "Error"
+ *                details:
+ *                  type: string
+ *                  example: "Missing messageId field in the request body"
  *      '410':
- *         description: Error - the message has been reinserted in the queue
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: "Error: this message has been reinserted in the queue"
- *
+ *        description: Error - the message has been reinserted in the queue
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                status:
+ *                  type: string
+ *                  example: "Error"
+ *                details:
+ *                  type: string
+ *                  example: "The message has been reinserted in the queue"
  */
 api.delete('/messages', (req, res) => {
   const result = queueService.acknowledge(req.body);
 
-  if (result === null) sendResponse(res, 400, { status: 'Error: missing "messageId" field in the request body' });
-  else if (result === false) sendResponse(res, 410, { status: 'Error: this message has been reinserted in the queue' });
-  else sendResponse(res, 200, { status: 'Success' });
+  if (result === null) sendResponse(res, 400, { status: 'Error', details: 'Missing "messageId" field in the request body' });
+  else if (result === false) sendResponse(res, 410, { status: 'Error', details: 'The message has been reinserted in the queue' });
+  else sendResponse(res, 204);
 });
 
 /**
