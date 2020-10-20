@@ -8,8 +8,27 @@ if (dotenvResult.error) {
   console.warn(`Warning: Could not read configuration file ${envPath}. Using default values.\n`);
 }
 
+// Get port from configuration or set default
+const port = process.env.PORT || 8080;
+
+// Swagger configuration
+const swaggerConfig = {
+  swaggerDefinition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'WonderQ',
+      version: '1.0.0',
+      description: 'Simple queuing system',
+    },
+    servers: [{ url: `http://localhost:${port}/wonderq/api` }]
+  },
+  apis: ['src/api/routes.js']
+};
+
 module.exports = {
-  port: process.env.PORT || 8080,
+  debug: process.env.DEBUG === 'true',
+  port,
   reinsertionTimeout: parseInt(process.env.REINSERTION_TIMEOUT, 10) || 20000,
-  requestTimeout: parseInt(process.env.REQUEST_TIMEOUT, 10) || 30000
+  requestTimeout: parseInt(process.env.REQUEST_TIMEOUT, 10) || 30000,
+  swaggerConfig
 };
