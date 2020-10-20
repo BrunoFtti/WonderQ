@@ -1,0 +1,36 @@
+{
+  "name": "wonderq",
+  "version": "1.0.0",
+  "description": "Simple queuing system",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BrunoFtti/WonderQ.git"
+  },
+  "author": "Bruno Falletti",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BrunoFtti/WonderQ/issues"
+  },
+  "homepage": "https://github.com/BrunoFtti/WonderQ#readme",
+  "devDependencies": {
+    "eslint": "7.11.0",
+    "eslint-config-standard": "14.1.1",
+    "eslint-plugin-import": "2.22.1",
+    "eslint-plugin-node": "11.1.0",
+    "eslint-plugin-promise": "4.2.1",
+    "eslint-plugin-standard": "4.0.1",
+    "jest": "26.6.0"
+  },
+  "dependencies": {
+    "cors": "2.8.5",
+    "dotenv": "8.2.0",
+    "express": "4.17.1",
+    "morgan": "1.10.0",
+    "uuid": "8.3.1"
+  }
+}
