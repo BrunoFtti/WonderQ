@@ -18,7 +18,7 @@ const swaggerConfig = {
     info: {
       title: 'WonderQ',
       version: '1.0.0',
-      description: 'Simple queuing system',
+      description: 'Simple queuing system'
     },
     servers: [{ url: `http://localhost:${port}/wonderq/api` }]
   },
