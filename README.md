@@ -12,7 +12,7 @@ If the consumer fails to acknowledge a message after a configurable amount of ti
 To acknowledge a message, you need to use its ID, obtained during its enqueuing or dequeuing.
 
 ## Installation
-Inside the project folder, to install the project dependencies run the command:
+Inside the project folder, to install the project dependencies run the command:\
 `npm install`
 
 ## Configuration
@@ -29,11 +29,11 @@ Here you can set:
 - **REQUEST_TIMEOUT** = value (ms) that the service will wait before replying **408 Request Timeout** if there is no previous response.
 
 ## Run the service
-To start the service run the command:
+To start the service run the command:\
 `npm start`
 
 ## API documentation
-Once the service is up, the full API documentation can be found in
+Once the service is up, the full API documentation can be found in\
 **http://localhost:8080/wonderq/api/api-docs/**
 
 The main endpoints are:
