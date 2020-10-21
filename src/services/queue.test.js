@@ -192,7 +192,7 @@ describe('Queue', () => {
     });
   });
 
-  describe('Enqueue five messages and dequeue three in one action', () => {  // CHECK IF THE OTHER TWO ARE IN CORRECT ORDER IN THE QUEUE AGAIN AND THE MIDDLE ONE DISSAPEARED
+  describe('Enqueue five messages and dequeue three in one action', () => {
     test('After the reinsertion time has passed acknowledge the second message', () => {
       const testMsg1 = createTestMsg(1);
       const testMsg2 = createTestMsg(2);
@@ -279,7 +279,7 @@ describe('Queue', () => {
       expect(setTimeout).toHaveBeenCalledTimes(1);
       expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), reinsertionTimeout);
 
-      // The obtained value should be false
+      // The obtained value should be true
       expect(ackResult).toBe(true);
 
       // The three messages should not be in pending anymore

@@ -8,7 +8,7 @@ const { port, requestTimeout } = require('./config/config');
 
 const app = express();
 app.use(cors());
-app.use(morgan(':status - :method :url - :response-time ms'));
+app.use(morgan('[:date[clf]] :status :method :url - :response-time ms'));
 app.use(express.json());
 app.use((req, res, next) => {
   res.setTimeout(requestTimeout, () => {

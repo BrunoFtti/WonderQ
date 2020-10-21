@@ -22,9 +22,10 @@ class Queue {
     });
 
     // Insert the deleted messages at the start of the queue
-    if (deletedMessages.length) this.messages.unshift(...deletedMessages);
-
-    if (debug) console.log(`${deletedMessages.length} messages reinserted after timeout`);
+    if (deletedMessages.length) {
+      this.messages.unshift(...deletedMessages);
+      if (debug) console.log(`${deletedMessages.length} messages reinserted after timeout`);
+    }
   };
 
   // Reset the internal state
