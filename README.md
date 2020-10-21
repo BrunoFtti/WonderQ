@@ -1,7 +1,4 @@
-# WonderQ
-Simple queuing system
-
----
+# WonderQ - simple queuing system
 
 ## Description
 WonderQ is a queuing system designed to work with a high volume of messages. You can:
@@ -9,9 +6,9 @@ WonderQ is a queuing system designed to work with a high volume of messages. You
 - Dequeue one or more messages
 - Acknowledge one message
 
-The content of the message can be dynamic, as long as it is not empty.
-When messages are dequeued, they remain in the system marked as pending messages.
-If the consumer fails to acknowledge a message after a configurable amount of time, the message will be reinserted in the queue.
+The content of the message can be dynamic, as long as it is not empty.\
+When messages are dequeued, they remain in the system marked as pending messages.\
+If the consumer fails to acknowledge a message after a configurable amount of time, the message will be reinserted in the queue.\
 To acknowledge a message, you need to use its ID, obtained during its enqueuing or dequeuing.
 
 ## Installation
@@ -22,7 +19,7 @@ Inside the project folder, to install the project dependencies run the command:
 The project can be configured for each stage, through the **.env** files found in the directory: 
 > src/config/
 
-These configuration files will be loaded according to the value of **NODE_ENV** (development, test, production).
+These configuration files will be loaded according to the value of **NODE_ENV** (development, test, production).\
 If NODE_ENV is not set, then by default the program will use
 > src/config/.env.development
 
