@@ -86,6 +86,21 @@ describe('Queue', () => {
       expect(obtainedMessages3[0]).toMatchObject({ ...testMsg3, messageId: messageId3 });
     });
 
+    test('Enqueue three messages, dequeue two in one action', () => {
+      const testMsg1 = createTestMsg(1);
+      const testMsg2 = createTestMsg(2);
+      const testMsg3 = createTestMsg(3);
+
+      const messageId1 = queueService.enqueue(testMsg1);
+      const messageId2 = queueService.enqueue(testMsg2);
+      queueService.enqueue(testMsg3);
+
+      const obtainedMessages = queueService.dequeue({ amount: 2 });
+
+      // The obtained messages should be in the correct order
+      expect(obtainedMessages).toMatchObject([{ ...testMsg1, messageId: messageId1 }, { ...testMsg2, messageId: messageId2 }]);
+    });
+
     test('With an empty body, after enqueuing one message', () => {
       const testMsg = createTestMsg();
       const messageId = queueService.enqueue(testMsg);
@@ -145,6 +160,141 @@ describe('Queue', () => {
 
       // The message should not be in pending anymore
       expect(queueService.pending[`${messageId}`]).toBeUndefined();
+    });
+
+    test('After the reinsertion time has passed', () => {
+      const testMsg = createTestMsg();
+      const messageId = queueService.enqueue(testMsg);
+
+      // Set fake timers so the test does not need to wait for the timeout of reinsertion
+      jest.useFakeTimers();
+
+      queueService.dequeue({ amount: 1 });
+
+      // Fast-forward until all timers have been executed
+      jest.runAllTimers();
+
+      // Check that setTimeout has been called with the configured time
+      expect(setTimeout).toHaveBeenCalledTimes(1);
+      expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), reinsertionTimeout);
+
+      // Acknowledge the message
+      const ackResult = queueService.acknowledge({ messageId });
+
+      // The obtained value should be false
+      expect(ackResult).toBe(false);
+
+      // The message should still be in the queue
+      expect(queueService.messages[0]).toMatchObject({ ...testMsg, messageId });
+
+      // The message should not be in pending anymore
+      expect(queueService.pending[`${messageId}`]).toBeUndefined();
+    });
+  });
+
+  describe('Enqueue five messages and dequeue three in one action', () => {  // CHECK IF THE OTHER TWO ARE IN CORRECT ORDER IN THE QUEUE AGAIN AND THE MIDDLE ONE DISSAPEARED
+    test('After the reinsertion time has passed acknowledge the second message', () => {
+      const testMsg1 = createTestMsg(1);
+      const testMsg2 = createTestMsg(2);
+      const testMsg3 = createTestMsg(3);
+      const testMsg4 = createTestMsg(4);
+      const testMsg5 = createTestMsg(5);
+
+      const messageId1 = queueService.enqueue(testMsg1);
+      const messageId2 = queueService.enqueue(testMsg2);
+      const messageId3 = queueService.enqueue(testMsg3);
+      const messageId4 = queueService.enqueue(testMsg4);
+      const messageId5 = queueService.enqueue(testMsg5);
+
+      // Set fake timers so the test does not need to wait for the timeout of reinsertion
+      jest.useFakeTimers();
+
+      const obtainedMessages = queueService.dequeue({ amount: 3 });
+
+      // The obtained messages should be in the correct order
+      expect(obtainedMessages).toMatchObject([
+        { ...testMsg1, messageId: messageId1 },
+        { ...testMsg2, messageId: messageId2 },
+        { ...testMsg3, messageId: messageId3 }
+      ]);
+
+      // Fast-forward until all timers have been executed
+      jest.runAllTimers();
+
+      // Check that setTimeout has been called with the configured time
+      expect(setTimeout).toHaveBeenCalledTimes(1);
+      expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), reinsertionTimeout);
+
+      // Acknowledge the message
+      const ackResult = queueService.acknowledge({ messageId: messageId2 });
+
+      // The obtained value should be false
+      expect(ackResult).toBe(false);
+
+      // All five messages should be in order again in the queue
+      expect(queueService.messages[0]).toMatchObject({ ...testMsg1, messageId: messageId1 });
+      expect(queueService.messages[1]).toMatchObject({ ...testMsg2, messageId: messageId2 });
+      expect(queueService.messages[2]).toMatchObject({ ...testMsg3, messageId: messageId3 });
+      expect(queueService.messages[3]).toMatchObject({ ...testMsg4, messageId: messageId4 });
+      expect(queueService.messages[4]).toMatchObject({ ...testMsg5, messageId: messageId5 });
+
+      // The three messages should not be in pending anymore
+      expect(queueService.pending[`${messageId1}`]).toBeUndefined();
+      expect(queueService.pending[`${messageId2}`]).toBeUndefined();
+      expect(queueService.pending[`${messageId3}`]).toBeUndefined();
+    });
+
+    test('Before the reinsertion time has passed acknowledge the second message', () => {
+      const testMsg1 = createTestMsg(1);
+      const testMsg2 = createTestMsg(2);
+      const testMsg3 = createTestMsg(3);
+      const testMsg4 = createTestMsg(4);
+      const testMsg5 = createTestMsg(5);
+
+      const messageId1 = queueService.enqueue(testMsg1);
+      const messageId2 = queueService.enqueue(testMsg2);
+      const messageId3 = queueService.enqueue(testMsg3);
+      const messageId4 = queueService.enqueue(testMsg4);
+      const messageId5 = queueService.enqueue(testMsg5);
+
+      // Set fake timers so the test does not need to wait for the timeout of reinsertion
+      jest.useFakeTimers();
+
+      const obtainedMessages = queueService.dequeue({ amount: 3 });
+
+      // The obtained messages should be in the correct order
+      expect(obtainedMessages).toMatchObject([
+        { ...testMsg1, messageId: messageId1 },
+        { ...testMsg2, messageId: messageId2 },
+        { ...testMsg3, messageId: messageId3 }
+      ]);
+
+      // Acknowledge the second message
+      const ackResult = queueService.acknowledge({ messageId: messageId2 });
+
+      // Fast-forward until all timers have been executed
+      jest.runAllTimers();
+
+      // Check that setTimeout has been called with the configured time
+      expect(setTimeout).toHaveBeenCalledTimes(1);
+      expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), reinsertionTimeout);
+
+      // The obtained value should be false
+      expect(ackResult).toBe(true);
+
+      // The three messages should not be in pending anymore
+      expect(queueService.pending[`${messageId1}`]).toBeUndefined();
+      expect(queueService.pending[`${messageId2}`]).toBeUndefined();
+      expect(queueService.pending[`${messageId3}`]).toBeUndefined();
+
+      // The queue should only have 4 messages now
+      expect(queueService.messages.length).toBe(4);
+
+      // The other four messages should be in order again in the queue
+      expect(queueService.messages[0]).toMatchObject({ ...testMsg1, messageId: messageId1 });
+      expect(queueService.messages[1]).toMatchObject({ ...testMsg3, messageId: messageId3 });
+      expect(queueService.messages[2]).toMatchObject({ ...testMsg4, messageId: messageId4 });
+      expect(queueService.messages[3]).toMatchObject({ ...testMsg5, messageId: messageId5 });
     });
   });
 });

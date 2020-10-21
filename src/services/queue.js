@@ -8,20 +8,23 @@ class Queue {
     this.pending = {};
   }
 
-  // If the message exists in pending, remove it and reinsert it as the first of the queue
-  reinsertMessage (msg) {
-    const { messageId } = msg;
+  // Remove the messages that are still in pending and add them at the start of the queue
+  reinsertMessages (messageArray) {
+    // Delete each message from pending if it is there, and keep the ones deleted
+    const deletedMessages = messageArray.filter(msg => {
+      if (this.pending[`${msg.messageId}`]) {
+        // Delete the message from pending
+        delete this.pending[`${msg.messageId}`];
 
-    // Search the message in pending
-    if (this.pending[`${messageId}`]) {
-      // Delete the message from pending
-      delete this.pending[`${messageId}`];
+        return true;
+      }
+      return false
+    });
 
-      // Reinsert the message as the first of the queue
-      this.messages.unshift(msg);
+    // Insert the deleted messages at the start of the queue
+    if (deletedMessages.length) this.messages.unshift(...deletedMessages);
 
-      if (debug) console.log(`${messageId} reinserted after timeout`);
-    }
+    if (debug) console.log(`${deletedMessages.length} messages reinserted after timeout`);
   };
 
   // Reset the internal state
@@ -63,8 +66,9 @@ class Queue {
     for (let i = result.length - 1; i >= 0; i--) {
       const message = result[i];
       this.pending[`${message.messageId}`] = message;
-      setTimeout(() => this.reinsertMessage(message), reinsertionTimeout);
     }
+
+    setTimeout(() => this.reinsertMessages(result), reinsertionTimeout);
 
     return result;
   };
