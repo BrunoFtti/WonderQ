@@ -13,7 +13,9 @@ To acknowledge a message, you need to use its ID, obtained during its enqueuing 
 
 ## Installation
 Inside the project folder, to install the project dependencies run the command:\
-`npm install`
+~~~
+npm install
+~~~
 
 ## Configuration
 The project can be configured for each stage, through the **.env** files found in the directory: 
@@ -30,7 +32,9 @@ Here you can set:
 
 ## Run the service
 To start the service run the command:\
-`npm start`
+~~~
+npm start
+~~~
 
 ## API documentation
 Once the service is up, the full API documentation can be found in\
@@ -44,7 +48,7 @@ The main endpoints are:
 |Acknowledge one message|**DELETE**|http://localhost:8080/wonderq/api/messages|{ messageId: **(ID obtained from en/dequeuing)**}|
 
 ## Timeout Error
-The service can reply **408 Request Timeout** if there was no response after a configurable amount of time.
+The service will reply **408 Request Timeout** if there was no response after a configurable amount of time.
 
 
 ---
